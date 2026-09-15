@@ -1,0 +1,67 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: Arial;
+}
+
+body {
+  background: #f5f8fa;
+  color: #222;
+}
+
+header {
+  background: #111;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+nav {
+  margin-top: 10px;
+}
+
+nav a {
+  color: white;
+  margin: 15px;
+  text-decoration: none;
+}
+
+section {
+  max-width: 700px;
+  margin: auto;
+  padding: 30px;
+  text-align: center;
+}
+
+#profile {
+  background: white;
+  border-bottom: 1px solid #ccc;
+}
+
+.tweet {
+  background: white;
+  text-align: left;
+  margin: 15px 0;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px #ccc;
+}
+
+.tweet p {
+  margin: 12px 0;
+}
+
+button {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+footer {
+  background: #111;
+  color: white;
+  text-align: center;
+  padding: 15px;
+}   

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ShopEasy</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>🛍️ ShopEasy</h1>
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#products">Products</a>
+    <a href="#sell">Sell</a>
+    <span>🛒 Cart: <b id="cart">0</b></span>
+  </nav>
+</header>
+
+<section id="home">
+  <h2>Buy & Sell Products Easily</h2>
+  <input type="text" placeholder="Search products...">
+</section>
+
+<section id="products">
+  <h2>Products</h2>
+
+  <div class="product">
+    <h3>📱 Smartphone</h3>
+    <p>Latest Android Phone</p>
+    <b>₹15,999</b><br>
+    <button onclick="buy()">Buy Now</button>
+  </div>
+
+  <div class="product">
+    <h3>💻 Laptop</h3>
+    <p>High Performance Laptop</p>
+    <b>₹49,999</b><br>
+    <button onclick="buy()">Buy Now</button>
+  </div>
+
+  <div class="product">
+    <h3>🎧 Headphones</h3>
+    <p>Wireless Bluetooth Headset</p>
+    <b>₹1,999</b><br>
+    <button onclick="buy()">Buy Now</button>
+  </div>
+</section>
+
+<section id="sell">
+  <h2>Sell Your Product</h2>
+  <form onsubmit="return sellProduct()">
+    <input type="text" placeholder="Product Name" required>
+    <input type="number" placeholder="Price" required>
+    <textarea placeholder="Product Description"></textarea>
+    <button type="submit">List Product</button>
+  </form>
+</section>
+
+<footer>
+  <p>© 2026 ShopEasy</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

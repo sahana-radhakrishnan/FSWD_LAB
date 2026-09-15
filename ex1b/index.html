@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Twitter Page</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>𝕏 Twitter</h1>
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#profile">Profile</a>
+    <a href="#about">About</a>
+  </nav>
+</header>
+
+<section id="profile">
+  <h2>👤 Alex Kumar</h2>
+  <p>@alexkumar</p>
+  <p>Web Developer | Tech Enthusiast</p>
+</section>
+
+<section id="home">
+  <h2>Latest Posts</h2>
+
+  <div class="tweet">
+    <h3>Alex Kumar</h3>
+    <p>Learning web development is fun! 💻</p>
+    <button onclick="like(1)">❤️ Like <span id="like1">0</span></button>
+  </div>
+
+  <div class="tweet">
+    <h3>Alex Kumar</h3>
+    <p>Building my first website today! 🚀</p>
+    <button onclick="like(2)">❤️ Like <span id="like2">0</span></button>
+  </div>
+
+  <div class="tweet">
+    <h3>Alex Kumar</h3>
+    <p>HTML + CSS + JavaScript = Web Development.</p>
+    <button onclick="like(3)">❤️ Like <span id="like3">0</span></button>
+  </div>
+</section>
+
+<section id="about">
+  <h2>About</h2>
+  <p>This is a simple Twitter/X-inspired webpage.</p>
+</section>
+
+<footer>
+  <p>© 2026 Twitter Page</p>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>
