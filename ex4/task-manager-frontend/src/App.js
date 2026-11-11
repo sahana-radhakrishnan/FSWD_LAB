@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import "./App.css";
 
+const API_BASE = process.env.REACT_APP_API_URL || "";
+
 const STATUSES = ["Pending", "Ongoing", "Completed"];
 
 const STATUS_DETAILS = {
@@ -20,7 +22,7 @@ function App() {
 
   const fetchTasks = useCallback(async () => {
     try {
-      const response = await axios.get("/tasks");
+      const response = await axios.get(`${API_BASE}/tasks`);
       setTasks(response.data);
       setMessage(null);
     } catch (error) {
@@ -58,7 +60,7 @@ function App() {
 
     setSaving(true);
     try {
-      const response = await axios.post("/tasks", { title: trimmedTitle });
+      const response = await axios.post(`${API_BASE}/tasks`, { title: trimmedTitle });
       setTasks((currentTasks) => [response.data, ...currentTasks]);
       setTitle("");
       setMessage({ type: "success", text: "Task created successfully." });
@@ -76,7 +78,7 @@ function App() {
   async function updateTaskStatus(id, status) {
     setBusyTaskIds((currentIds) => [...currentIds, id]);
     try {
-      const response = await axios.patch(`/tasks/${id}`, { status });
+      const response = await axios.patch(`${API_BASE}/tasks/${id}`, { status });
       setTasks((currentTasks) =>
         currentTasks.map((task) => (task._id === id ? response.data : task))
       );
@@ -95,7 +97,7 @@ function App() {
   async function deleteTask(id) {
     setBusyTaskIds((currentIds) => [...currentIds, id]);
     try {
-      await axios.delete(`/tasks/${id}`);
+      await axios.delete(`${API_BASE}/tasks/${id}`);
       setTasks((currentTasks) => currentTasks.filter((task) => task._id !== id));
       setMessage({ type: "success", text: "Task deleted successfully." });
     } catch (error) {

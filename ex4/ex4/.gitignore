@@ -1,5 +1,0 @@
-node_modules/
-task-manager-frontend/node_modules/
-task-manager-frontend/build/
-.env
-npm-debug.log*

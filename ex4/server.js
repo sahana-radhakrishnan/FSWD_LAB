@@ -115,15 +115,27 @@ app.use((error, req, res, next) => {
   res.status(500).json({ message: "An unexpected server error occurred." });
 });
 
-mongoose
-  .connect(MONGODB_URI)
-  .then(() => {
+const connectDB = async () => {
+  if (mongoose.connection.readyState === 1) return;
+  try {
+    await mongoose.connect(MONGODB_URI, { serverSelectionTimeoutMS: 5000 });
     console.log("MongoDB connected");
+  } catch (error) {
+    console.error("MongoDB connection error:", error.message);
+  }
+};
+
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
+
+if (require.main === module) {
+  connectDB().finally(() => {
     app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
     });
-  })
-  .catch((error) => {
-    console.error("MongoDB connection error:", error);
-    process.exitCode = 1;
   });
+}
+
+module.exports = app;
