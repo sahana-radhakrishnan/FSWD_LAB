@@ -3,6 +3,8 @@ import { useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || '';
+
 function App() {
   const [feedback, setFeedback] = useState({
     q1: '',
@@ -24,7 +26,7 @@ function App() {
     e.preventDefault();
 
     try {
-      await axios.post('http://localhost:8080/api/feedback', feedback);
+      await axios.post(`${API_BASE}/api/feedback`, feedback);
       alert('Feedback submitted successfully!');
       setFeedback({ q1: '', q2: '', q3: '', q4: '', q5: '' });
     } catch (error) {
@@ -46,27 +48,27 @@ function App() {
         <form onSubmit={handleSubmit} className="feedback-form">
           <label>
             Name:
-            <input type="text" name="q1" value={feedback.q1} onChange={handleChange} />
+            <input type="text" name="q1" value={feedback.q1} onChange={handleChange} required />
           </label>
 
           <label>
             Department:
-            <input type="text" name="q2" value={feedback.q2} onChange={handleChange} />
+            <input type="text" name="q2" value={feedback.q2} onChange={handleChange} required />
           </label>
 
           <label>
             Session title:
-            <input type="text" name="q3" value={feedback.q3} onChange={handleChange} />
+            <input type="text" name="q3" value={feedback.q3} onChange={handleChange} required />
           </label>
 
           <label>
             Feedback:
-            <input type="text" name="q4" value={feedback.q4} onChange={handleChange} />
+            <input type="text" name="q4" value={feedback.q4} onChange={handleChange} required />
           </label>
 
           <label>
             Suggestions:
-            <input type="text" name="q5" value={feedback.q5} onChange={handleChange} />
+            <input type="text" name="q5" value={feedback.q5} onChange={handleChange} required />
           </label>
 
           <button type="submit">Submit</button>
