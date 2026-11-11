@@ -5,7 +5,7 @@ const User = require('../models/User');
 
 // Route to handle user registration
 router.post('/register', async (req, res) => {
-    const { username, email, rollNumber, casualLeave = 0, medicalLeave = 0 } = req.body;
+    const { username, email, rollNumber, casualLeave, medicalLeave } = req.body;
 
     try {
         // Check if the user already exists
@@ -20,13 +20,16 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: 'Invalid email format' });
         }
 
+        const parsedCasual = (casualLeave !== undefined && casualLeave !== null && !isNaN(parseInt(casualLeave))) ? parseInt(casualLeave) : 10;
+        const parsedMedical = (medicalLeave !== undefined && medicalLeave !== null && !isNaN(parseInt(medicalLeave))) ? parseInt(medicalLeave) : 10;
+
         // Create a new user
         const userDoc = new User({
             username,
             email,
             rollNumber,
-            casualLeave,
-            medicalLeave
+            casualLeave: parsedCasual,
+            medicalLeave: parsedMedical
         });
 
         await userDoc.save();
@@ -87,7 +90,7 @@ router.get('/leave-balance/:id', async (req, res) => {
     }
 });
 
-// Route to apply for leave (ADD leave days instead of reducing them)
+// Route to apply for leave (Deduct leave days from balance)
 router.post('/apply-leave/:id', async (req, res) => {
     const { type, days } = req.body;
 
@@ -100,27 +103,41 @@ router.post('/apply-leave/:id', async (req, res) => {
         // Ensure days is a number
         const leaveDays = parseInt(days);
         if (isNaN(leaveDays) || leaveDays <= 0) {
-            return res.status(400).json({ message: 'Invalid number of days' });
+            return res.status(400).json({ message: 'Invalid number of days. Must be at least 1.' });
         }
 
-        // Add leave days instead of reducing them
+        // Check for sufficient balance and deduct
         if (type === 'casual') {
-            user.casualLeave += leaveDays;
+            if (user.casualLeave < leaveDays) {
+                return res.status(400).json({
+                    message: `Insufficient casual leave balance. You have ${user.casualLeave} day(s) remaining.`,
+                    casualLeave: user.casualLeave,
+                    medicalLeave: user.medicalLeave
+                });
+            }
+            user.casualLeave -= leaveDays;
         } else if (type === 'medical') {
-            user.medicalLeave += leaveDays;
+            if (user.medicalLeave < leaveDays) {
+                return res.status(400).json({
+                    message: `Insufficient medical leave balance. You have ${user.medicalLeave} day(s) remaining.`,
+                    casualLeave: user.casualLeave,
+                    medicalLeave: user.medicalLeave
+                });
+            }
+            user.medicalLeave -= leaveDays;
         } else {
-            return res.status(400).json({ message: 'Invalid leave type' });
+            return res.status(400).json({ message: 'Invalid leave type. Must be casual or medical.' });
         }
 
         await user.save();
         res.json({
-            message: 'Leave added successfully',
+            message: 'Leave applied successfully',
             casualLeave: user.casualLeave,
             medicalLeave: user.medicalLeave
         });
     } catch (error) {
-        console.error('Error adding leave:', error);
-        res.status(500).json({ message: 'Server error' });
+        console.error('Error applying leave:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
 });
 
