@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "rewrites": [
+    {
+      "source": "/tasks/(.*)",
+      "destination": "/api/index.js"
+    },
+    {
+      "source": "/tasks",
+      "destination": "/api/index.js"
+    }
+  ]
+}
