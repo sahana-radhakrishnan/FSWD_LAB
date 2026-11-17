@@ -1,86 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leave Management System</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101d3a"><meta name="description" content="Student leave management portal">
+  <title>CampusCare | Leave Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css"><script src="app.js" defer></script>
 </head>
-
 <body>
-    <div class="container">
-        <h1>Leave Management System</h1>
-
-        <!-- Login Section -->
-        <div id="login-section" class="form-section">
-            <h2>Login</h2>
-            <form id="login-form">
-                <label for="email">Email:</label>
-                <input type="email" id="email" required>
-                <button type="submit" class="btn">Login</button>
-            </form>
-            <p>Don't have an account? <button id="show-registration" class="link-btn" type="button">Create User</button></p>
-        </div>
-
-        <!-- Registration Section -->
-        <div id="registration-section" class="form-section" style="display: none;">
-            <h2>Create User</h2>
-            <form id="registration-form">
-                <label for="username">Username:</label>
-                <input type="text" id="username" required>
-
-                <label for="reg-email">Email:</label>
-                <input type="email" id="reg-email" required>
-
-                <label for="roll-number">Roll Number:</label>
-                <input type="text" id="roll-number" required>
-
-                <label for="casual-leave">Initial Casual Leave:</label>
-                <input type="number" id="casual-leave" value="10" min="0" required>
-
-                <label for="medical-leave">Initial Medical Leave:</label>
-                <input type="number" id="medical-leave" value="10" min="0" required>
-
-                <button type="submit" class="btn">Register</button>
-            </form>
-            <p>Already have an account? <button id="show-login" class="link-btn" type="button">Login</button></p>
-            <div id="registration-response"></div>
-        </div>
-
-        <!-- Leave Balance Section (Hidden until login) -->
-        <div class="balance-section" id="balance-section" style="display: none;">
-            <h2>Leave Balance</h2>
-            <p>Welcome, <span id="username-display"></span> (Roll Number: <span id="roll-number-display"></span>)</p>
-            <div id="leave-balance">
-                <p>Casual Leave: <span id="casual-leave-display">Loading...</span></p>
-                <p>Medical Leave: <span id="medical-leave-display">Loading...</span></p>
-            </div>
-            <button id="refresh-balance" class="btn" type="button">Refresh Balance</button>
-            <button id="logout-button" class="btn" type="button" style="display: none;">Logout</button>
-        </div>
-
-        <!-- Apply for Leave Section (Hidden until login) -->
-        <div class="apply-leave-section" id="apply-leave-section" style="display: none;">
-            <h2>Apply for Leave</h2>
-            <form id="leave-form">
-                <label for="leave-type">Leave Type:</label>
-                <select id="leave-type">
-                    <option value="casual">Casual</option>
-                    <option value="medical">Medical</option>
-                </select>
-
-                <label for="leave-days">Number of Days:</label>
-                <input type="number" id="leave-days" min="1" required>
-
-                <button type="submit" class="btn">Apply Leave</button>
-            </form>
-        </div>
-
-        <div id="response-message"></div>
+<main class="app-shell">
+  <aside class="brand-panel">
+    <div class="brand"><div class="brand-icon"><span></span><span></span><span></span></div><span>Campus<span class="brand-light">Care</span></span></div>
+    <div class="brand-content"><p class="overline">STUDENT SERVICES PORTAL</p><h1>Time off,<br><em>made simple.</em></h1>
+      <p class="brand-description">A clearer way to manage your campus leave. Check your balance, submit a request, and stay informed — all in one place.</p>
+      <div class="feature-list"><div class="feature"><span class="feature-check">✓</span>View your leave balance instantly</div><div class="feature"><span class="feature-check">✓</span>Apply for casual or medical leave</div><div class="feature"><span class="feature-check">✓</span>Keep your leave details organized</div></div>
     </div>
-
-    <script src="app.js"></script>
-</body>
-
-</html>
+    <div class="brand-footer"><span class="status-dot"></span> Student leave management <span>•</span> Simple. Clear. Convenient.</div><div class="decor decor-one"></div><div class="decor decor-two"></div>
+  </aside>
+  <section class="content-panel">
+    <div class="mobile-brand"><div class="brand-icon"><span></span><span></span><span></span></div><span>Campus<span class="brand-light">Care</span></span></div>
+    <section id="login-section" class="auth-card form-section">
+      <div class="card-kicker"><span class="kicker-line"></span> YOUR STUDENT ACCOUNT</div><h2>Welcome back</h2><p class="intro">Sign in with your registered email to continue.</p>
+      <form id="login-form" novalidate><div class="form-field"><label for="email">Email address</label><div class="input-wrap"><span class="input-icon">✉</span><input type="email" id="email" placeholder="name@college.edu" autocomplete="email" required></div></div><button type="submit" class="btn"><span>Sign in</span><span class="btn-arrow">→</span></button></form>
+      <div class="auth-switch"><span>New to CampusCare?</span><button id="show-registration" class="link-btn" type="button">Create an account</button></div><div class="secure-note">▣ Your leave details are stored in your student profile.</div>
+    </section>
+    <section id="registration-section" class="auth-card form-section" hidden>
+      <div class="card-kicker"><span class="kicker-line"></span> GET STARTED</div><h2>Create your account</h2><p class="intro">Set up your student profile to manage your leave.</p>
+      <form id="registration-form" novalidate>
+        <div class="form-field"><label for="username">Full name</label><input type="text" id="username" placeholder="Enter your name" autocomplete="name" maxlength="80" required></div>
+        <div class="form-field"><label for="reg-email">Email address</label><input type="email" id="reg-email" placeholder="name@college.edu" autocomplete="email" required></div>
+        <div class="form-field"><label for="roll-number">Student roll number</label><input type="text" id="roll-number" placeholder="Enter your roll number" required></div>
+        <div class="form-field"><label>Initial leave balance <span class="label-hint">Set by your institution</span></label><div class="field-grid"><div class="balance-input"><span>Casual leave</span><input type="number" id="casual-leave" value="10" min="0" step="1" required></div><div class="balance-input"><span>Medical leave</span><input type="number" id="medical-leave" value="10" min="0" step="1" required></div></div></div>
+        <button type="submit" class="btn"><span>Create account</span><span class="btn-arrow">→</span></button>
+      </form><div class="auth-switch"><span>Already have an account?</span><button id="show-login" class="link-btn" type="button">Sign in</button></div>
+    </section>
+    <section id="dashboard-section" class="dashboard" hidden>
+      <div class="dashboard-top"><div><div class="card-kicker"><span class="kicker-line"></span> STUDENT DASHBOARD</div><h2>Welcome, <span id="username-display"></span></h2><p class="intro">Your leave overview is ready.</p></div><button id="logout-button" class="btn btn-outline" type="button">Sign out</button></div>
+      <div class="student-meta"><span class="meta-icon">ID</span>Roll number <strong id="roll-number-display"></strong></div>
+      <section class="dash-section"><div class="section-heading"><div><p class="section-overline">YOUR SUMMARY</p><h3>Available leave</h3></div><button id="refresh-balance" class="refresh-btn" type="button">↻ <span>Refresh</span></button></div>
+        <div class="balance-grid"><article class="balance-card casual-card"><div class="balance-card-top"><span class="balance-symbol">C</span><span class="balance-tag">CASUAL</span></div><strong id="casual-leave-display">—</strong><span class="balance-caption">days available</span></article><article class="balance-card medical-card"><div class="balance-card-top"><span class="balance-symbol">M</span><span class="balance-tag">MEDICAL</span></div><strong id="medical-leave-display">—</strong><span class="balance-caption">days available</span></article></div>
+      </section>
+      <section class="dash-section apply-card"><div class="section-heading"><div><p class="section-overline">NEW REQUEST</p><h3>Apply for leave</h3><p class="intro">Select a leave type and the number of days.</p></div></div>
+        <form id="leave-form"><div class="form-field"><label for="leave-type">Leave category</label><select id="leave-type" required><option value="casual">Casual leave</option><option value="medical">Medical leave</option></select></div><div class="form-field"><label for="leave-days">Number of days</label><input type="number" id="leave-days" min="1" step="1" placeholder="e.g. 2" required></div><button type="submit" class="btn"><span>Submit leave request</span><span class="btn-arrow">→</span></button></form>
+      </section>
+    </section>
+    <div id="registration-response" class="message" role="status" aria-live="polite"></div><div id="response-message" class="message" role="status" aria-live="polite"></div>
+    <footer class="content-footer">© <span id="current-year"></span> CampusCare · Leave Management System</footer>
+  </section>
+</main>
+</body></html>

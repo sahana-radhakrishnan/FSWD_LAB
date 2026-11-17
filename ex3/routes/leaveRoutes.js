@@ -1,144 +1,128 @@
-// routes/leaveRoutes.js
 const express = require('express');
-const router = express.Router();
+const mongoose = require('mongoose');
 const User = require('../models/User');
 
-// Route to handle user registration
+const router = express.Router();
+
+// Register a user and initialize their leave balances.
 router.post('/register', async (req, res) => {
-    const { username, email, rollNumber, casualLeave, medicalLeave } = req.body;
+  try {
+    const { username, email, rollNumber } = req.body;
+    const casualLeave = req.body.casualLeave === undefined ? 10 : Number(req.body.casualLeave);
+    const medicalLeave = req.body.medicalLeave === undefined ? 10 : Number(req.body.medicalLeave);
 
-    try {
-        // Check if the user already exists
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({ message: 'User already exists with this email' });
-        }
-
-        // Validate email format
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            return res.status(400).json({ message: 'Invalid email format' });
-        }
-
-        const parsedCasual = (casualLeave !== undefined && casualLeave !== null && !isNaN(parseInt(casualLeave))) ? parseInt(casualLeave) : 10;
-        const parsedMedical = (medicalLeave !== undefined && medicalLeave !== null && !isNaN(parseInt(medicalLeave))) ? parseInt(medicalLeave) : 10;
-
-        // Create a new user
-        const userDoc = new User({
-            username,
-            email,
-            rollNumber,
-            casualLeave: parsedCasual,
-            medicalLeave: parsedMedical
-        });
-
-        await userDoc.save();
-        res.status(201).json({
-            message: 'User created successfully',
-            userId: userDoc._id,
-            username: userDoc.username,
-            rollNumber: userDoc.rollNumber,
-            casualLeave: userDoc.casualLeave,
-            medicalLeave: userDoc.medicalLeave
-        });
-    } catch (error) {
-        console.error('Error creating user:', error);
-        res.status(500).json({ message: 'Server error' });
+    if (!username?.trim() || !email?.trim() || !rollNumber?.trim()) {
+      return res.status(400).json({ message: 'Username, email and roll number are required.' });
     }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      return res.status(400).json({ message: 'Please enter a valid email address.' });
+    }
+    if (!Number.isInteger(casualLeave) || casualLeave < 0 || !Number.isInteger(medicalLeave) || medicalLeave < 0) {
+      return res.status(400).json({ message: 'Leave balances must be whole numbers greater than or equal to zero.' });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const existingUser = await User.findOne({ email: normalizedEmail });
+    if (existingUser) return res.status(409).json({ message: 'A user already exists with this email.' });
+
+    const user = await User.create({
+      username: username.trim(),
+      email: normalizedEmail,
+      rollNumber: rollNumber.trim(),
+      casualLeave,
+      medicalLeave
+    });
+
+    return res.status(201).json({
+      message: 'User created successfully.',
+      userId: user._id,
+      username: user.username,
+      rollNumber: user.rollNumber,
+      casualLeave: user.casualLeave,
+      medicalLeave: user.medicalLeave
+    });
+  } catch (error) {
+    if (error.code === 11000) return res.status(409).json({ message: 'A user already exists with this email.' });
+    console.error('Registration error:', error);
+    return res.status(500).json({ message: 'Unable to register user.' });
+  }
 });
 
-// Route to handle user login
+// Demo login: the original project uses email only (no password authentication).
 router.post('/login', async (req, res) => {
-    const { email } = req.body;
+  try {
+    const email = String(req.body.email || '').trim().toLowerCase();
+    if (!email) return res.status(400).json({ message: 'Email is required.' });
 
-    try {
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: 'User not found. Please create an account first.' });
 
-        // Return user details and leave balance
-        res.json({
-            message: 'Login successful',
-            userId: user._id,
-            username: user.username,
-            rollNumber: user.rollNumber,
-            casualLeave: user.casualLeave,
-            medicalLeave: user.medicalLeave
-        });
-    } catch (error) {
-        console.error('Error during login:', error);
-        res.status(500).json({ message: 'Server error', error: error.message });
-    }
+    return res.json({
+      message: 'Login successful.',
+      userId: user._id,
+      username: user.username,
+      rollNumber: user.rollNumber,
+      casualLeave: user.casualLeave,
+      medicalLeave: user.medicalLeave
+    });
+  } catch (error) {
+    console.error('Login error:', error);
+    return res.status(500).json({ message: 'Unable to log in.' });
+  }
 });
 
-// Route to get leave balance by user ID
 router.get('/leave-balance/:id', async (req, res) => {
-    try {
-        const user = await User.findById(req.params.id);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        res.json({
-            casualLeave: user.casualLeave,
-            medicalLeave: user.medicalLeave
-        });
-    } catch (error) {
-        console.error('Error fetching leave balance:', error);
-        res.status(500).json({ message: 'Server error' });
-    }
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(400).json({ message: 'Invalid user ID.' });
+    const user = await User.findById(req.params.id).select('casualLeave medicalLeave');
+    if (!user) return res.status(404).json({ message: 'User not found.' });
+    return res.json({ casualLeave: user.casualLeave, medicalLeave: user.medicalLeave });
+  } catch (error) {
+    console.error('Balance lookup error:', error);
+    return res.status(500).json({ message: 'Unable to fetch leave balance.' });
+  }
 });
 
-// Route to apply for leave (Deduct leave days from balance)
 router.post('/apply-leave/:id', async (req, res) => {
-    const { type, days } = req.body;
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) return res.status(400).json({ message: 'Invalid user ID.' });
 
-    try {
-        const user = await User.findById(req.params.id);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-
-        // Ensure days is a number
-        const leaveDays = parseInt(days);
-        if (isNaN(leaveDays) || leaveDays <= 0) {
-            return res.status(400).json({ message: 'Invalid number of days. Must be at least 1.' });
-        }
-
-        // Check for sufficient balance and deduct
-        if (type === 'casual') {
-            if (user.casualLeave < leaveDays) {
-                return res.status(400).json({
-                    message: `Insufficient casual leave balance. You have ${user.casualLeave} day(s) remaining.`,
-                    casualLeave: user.casualLeave,
-                    medicalLeave: user.medicalLeave
-                });
-            }
-            user.casualLeave -= leaveDays;
-        } else if (type === 'medical') {
-            if (user.medicalLeave < leaveDays) {
-                return res.status(400).json({
-                    message: `Insufficient medical leave balance. You have ${user.medicalLeave} day(s) remaining.`,
-                    casualLeave: user.casualLeave,
-                    medicalLeave: user.medicalLeave
-                });
-            }
-            user.medicalLeave -= leaveDays;
-        } else {
-            return res.status(400).json({ message: 'Invalid leave type. Must be casual or medical.' });
-        }
-
-        await user.save();
-        res.json({
-            message: 'Leave applied successfully',
-            casualLeave: user.casualLeave,
-            medicalLeave: user.medicalLeave
-        });
-    } catch (error) {
-        console.error('Error applying leave:', error);
-        res.status(500).json({ message: 'Server error', error: error.message });
+    const { type } = req.body;
+    const days = Number(req.body.days);
+    if (!Number.isInteger(days) || days < 1) {
+      return res.status(400).json({ message: 'Number of leave days must be a whole number of at least 1.' });
     }
+    if (!['casual', 'medical'].includes(type)) {
+      return res.status(400).json({ message: 'Leave type must be casual or medical.' });
+    }
+
+    const field = type === 'casual' ? 'casualLeave' : 'medicalLeave';
+    // Atomic conditional update prevents a balance from becoming negative.
+    const user = await User.findOneAndUpdate(
+      { _id: req.params.id, [field]: { $gte: days } },
+      { $inc: { [field]: -days } },
+      { new: true, runValidators: true }
+    );
+
+    if (!user) {
+      const existingUser = await User.findById(req.params.id);
+      if (!existingUser) return res.status(404).json({ message: 'User not found.' });
+      return res.status(400).json({
+        message: `Insufficient ${type} leave balance. You have ${existingUser[field]} day(s) remaining.`,
+        casualLeave: existingUser.casualLeave,
+        medicalLeave: existingUser.medicalLeave
+      });
+    }
+
+    return res.json({
+      message: 'Leave applied successfully.',
+      casualLeave: user.casualLeave,
+      medicalLeave: user.medicalLeave
+    });
+  } catch (error) {
+    console.error('Apply leave error:', error);
+    return res.status(500).json({ message: 'Unable to apply for leave.' });
+  }
 });
 
 module.exports = router;

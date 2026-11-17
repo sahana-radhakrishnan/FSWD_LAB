@@ -1,43 +1,37 @@
-// app.js
-const express = require("express");
-const bodyParser = require("body-parser");
-const path = require("path");
-const connectDB = require("./config/db");
-const leaveRoutes = require("./routes/leaveRoutes");
+const express = require('express');
+const path = require('path');
+const connectDB = require('./config/db');
+const leaveRoutes = require('./routes/leaveRoutes');
 
 const app = express();
 
-// Connect to MongoDB
-connectDB();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Middleware
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// Serve static files from the "public" directory
-app.use(express.static(path.join(__dirname, "public")));
-
-// Ensure DB connected on API requests
-app.use("/api", async (req, res, next) => {
-  await connectDB();
-  next();
+// Connect to MongoDB before handling API requests.
+app.use('/api', async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error('MongoDB connection failed:', error.message);
+    res.status(503).json({
+      message: 'Database unavailable. Check your MONGODB_URI setting and try again.'
+    });
+  }
 });
 
-// API Routes
-app.use("/api", leaveRoutes);
+app.use('/api', leaveRoutes);
 
-// Root route fallback
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+// Return the frontend for the home page and unknown non-API routes.
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Start the server if run directly
 const PORT = process.env.PORT || 5050;
 if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
+  app.listen(PORT, () => console.log(`Leave Management System running at http://localhost:${PORT}`));
 }
 
 module.exports = app;
-

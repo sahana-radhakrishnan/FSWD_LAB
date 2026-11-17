@@ -1,10 +1,14 @@
 {
   "name": "leave-management-system",
   "version": "1.0.0",
-  "description": "Leave management app",
+  "private": true,
+  "description": "A simple student leave management system using Express and MongoDB.",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "dependencies": {
     "body-parser": "^1.20.3",
