@@ -1,5 +1,7 @@
 node_modules/
-task-manager-frontend/node_modules/
-task-manager-frontend/build/
 .env
-npm-debug.log*
+.env.*
+!.env.example
+task-management/node_modules/
+task-management/dist/
+*.log

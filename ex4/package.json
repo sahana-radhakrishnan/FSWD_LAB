@@ -1,15 +1,18 @@
 {
-  "name": "project-task-management-api",
+  "name": "fswd-ex5",
   "version": "1.0.0",
-  "private": true,
-  "description": "Express and MongoDB API for the project task management exercise",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.21.2",
-    "mongoose": "^8.9.5"
+    "cors": "^2.8.6",
+    "express": "^5.3.0",
+    "mongoose": "^9.11.4"
   }
 }
