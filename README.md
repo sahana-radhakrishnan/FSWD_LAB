@@ -5,4 +5,4 @@ ex2b: https://fswdlabex2b.vercel.app/
 ex3: https://fswdlabex3final.vercel.app/
 ex4: https://fswd-ex4.vercel.app/
 ex5: https://client-tau-three-21.vercel.app/
-ex6: 
+ex6: https://fswd-content-beyond-syllabus-1.onrender.com
